@@ -29,7 +29,7 @@
 	}
 
 	// SELECT DB (shortcut for future reuse)
-	$DB = $mdbClient->{$dbColl};
+	$DB = $mdbClient->{$dbName};
 
 
 	// DEFINE an INDEX (not required)
