@@ -8,11 +8,11 @@
 	$dbHost='localhost'; // DB Server Host - This could also be 127.0.0.1 or a remore host/ip
 	$dbPort=27017; // DB Server Port
 	$dbName='testdb'; // Database where we will work
-	$dbColl='testcoll'; // Collection (table) where we will work
+	$dbColl='testcoll'; // Collection (like a table) where we will work
 
 	error_reporting(-1); // display all errors (not required)
 
-  // To install the MongoDB PHP driver:
+  	// To install the MongoDB PHP driver:
 	// composer require mongodb/mongodb
 	// add extension=mongodb.so to php.ini
 
@@ -39,7 +39,10 @@
 	// CREATE (Insert one record)
 	// Note, this will fail and kill the entire script if an indexed unique field already exists. Use find first or upsert instead if possible.
 	$result = $DB->{$dbColl}->insertOne(array('n' => 'Bob', 'p' => 123, 'f' => 'Pizza', 'a' => 'Hello'));
-	echo "INSERTed MongoID '" . $result->getInsertedId() . "'.<br>\n";
+	echo "INSERTed MongoID '" . $result->getInsertedId() . "' (1)<br>\n";
+
+	$result = $DB->{$dbColl}->insertOne(array('n' => 'Jane', 'p' => 456, 'f' => 'Carrots', 'a' => 'Goodbye'));
+	echo "INSERTed MongoID '" . $result->getInsertedId() . "' (2)<br>\n";
 	
 
 	// CREATE/UPDATE (Upsert one record)
@@ -55,11 +58,11 @@
 
 	if($result->getUpsertedCount()){
 		// AN INSERT WAS PERFORMED (No existing document found)
-		echo "An INSERT was performed resulting in new MongoID '" . $result->getUpsertedId() . "'.<br>\n";
+		echo "Upsert: An INSERT was performed resulting in new MongoID '" . $result->getUpsertedId() . "'.<br>\n";
 	}else{
 		// AN UPDATE WAS PERFORMED (Document alreay existed)
 		// Note: You can do a new find command here to find the _id or use findAndModify instead of upsert
-		echo "An UPDATE was performed.<br>\n";
+		echo "Upsert: An UPDATE was performed.<br>\n";
 	}
 
 
@@ -69,12 +72,13 @@
 		array('$set' => array('f' => 789))
 	);
 
+
 	// READ (Find One Record)
 	$doc = $DB->{$dbColl}->findOne(array('n' => 'Bob'));
 
-	$doc['_id'] = (string)$doc['_id']; // Convert MongoID Object to a string so that json_encode works :)
+	$doc['_id'] = (string)$doc['_id']; // Convert MongoID Object to a string so that json_encode works
 
-	echo "Read Document: " . json_encode($doc) . "<br>\n";
+	echo "Read Document (1): " . json_encode($doc) . "<br>\n";
 
 	// Check if it is a correctly formatted MongoID
 	if(isValidMongoID($doc['_id'])){
@@ -82,6 +86,24 @@
 	}else{
 		echo "MongoID '".$doc['_id']."' is NOT valid.<br>\n";
 	}
+
+
+	// READ (Find One Record by _id string)
+	$doc = $DB->{$dbColl}->findOne(array('_id' => new MongoDB\BSON\ObjectId((string)$doc['_id']) ));
+
+	$doc['_id'] = (string)$doc['_id']; // Convert MongoID Object to a string so that json_encode works
+
+	echo "Read Document (2): " . json_encode($doc) . "<br>\n";
+
+
+	// READ (Find All Records, sort assending by _id)
+	$cursor = $DB->{$dbColl}->find(array(), array('sort' => array('_id' => 1)));
+
+ 	foreach ($cursor as $doc) {
+		$doc['_id'] = (string)$doc['_id']; // Convert MongoID Object to a string so that json_encode works
+		echo "Read Document (3): " . json_encode($doc) . "<br>\n";
+	}
+
 
 	// DELETE
 	$DB->{$dbColl}->deleteOne(array('n' => 'Bob'));
