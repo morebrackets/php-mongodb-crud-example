@@ -36,7 +36,7 @@
 	$DB->{$dbColl}->createIndex(array('n' => 1));
 
 
-	// CREATE (Insert one record)
+	// CREATE (Insert one Document)
 	// Note, this will fail and kill the entire script if an indexed unique field already exists. Use find first or upsert instead if possible.
 	$result = $DB->{$dbColl}->insertOne(array('n' => 'Bob', 'p' => 123, 'f' => 'Pizza', 'a' => 'Hello'));
 	echo "INSERTed MongoID '" . $result->getInsertedId() . "' (1)<br>\n";
@@ -45,7 +45,7 @@
 	echo "INSERTed MongoID '" . $result->getInsertedId() . "' (2)<br>\n";
 	
 
-	// CREATE/UPDATE (Upsert one record)
+	// CREATE/UPDATE (Upsert one Document)
 	$result = $DB->{$dbColl}->updateOne(
 	    array('n' => 'Bob', 'p' => 123), // What document to find
 	    array( 
@@ -61,19 +61,19 @@
 		echo "Upsert: An INSERT was performed resulting in new MongoID '" . $result->getUpsertedId() . "'.<br>\n";
 	}else{
 		// AN UPDATE WAS PERFORMED (Document alreay existed)
-		// Note: You can do a new find command here to find the _id or use findAndModify instead of upsert
+		// Note: You can run a new find command here to find the _id or use findAndModify instead of upsert
 		echo "Upsert: An UPDATE was performed.<br>\n";
 	}
 
 
-	// UPDATE (One Record)
+	// UPDATE (One Document)
 	$DB->{$dbColl}->updateOne(
 		array('n' => 'Bob' ),
 		array('$set' => array('f' => 789))
 	);
 
 
-	// READ (Find One Record)
+	// READ (Find One Document)
 	$doc = $DB->{$dbColl}->findOne(array('n' => 'Bob'));
 
 	$doc['_id'] = (string)$doc['_id']; // Convert MongoID Object to a string so that json_encode works
@@ -88,7 +88,7 @@
 	}
 
 
-	// READ (Find One Record by _id string)
+	// READ (Find One Documents by _id string)
 	$doc = $DB->{$dbColl}->findOne(array('_id' => new MongoDB\BSON\ObjectId((string)$doc['_id']) ));
 
 	$doc['_id'] = (string)$doc['_id']; // Convert MongoID Object to a string so that json_encode works
@@ -96,13 +96,17 @@
 	echo "Read Document (2): " . json_encode($doc) . "<br>\n";
 
 
-	// READ (Find All Records, sort assending by _id)
+	// READ (Find All Documents, sort assending by _id)
 	$cursor = $DB->{$dbColl}->find(array(), array('sort' => array('_id' => 1)));
 
  	foreach ($cursor as $doc) {
 		$doc['_id'] = (string)$doc['_id']; // Convert MongoID Object to a string so that json_encode works
 		echo "Read Document (3): " . json_encode($doc) . "<br>\n";
 	}
+
+	// COUNT number of Documents
+	$count = $DB->{$dbColl}->count(array());
+	echo "Count of Documents: " . $count . "<br>\n";
 
 
 	// DELETE
