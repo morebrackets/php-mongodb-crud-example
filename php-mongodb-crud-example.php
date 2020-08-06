@@ -119,12 +119,20 @@
 	}
 
 
+	// READ (Find One Documents by _id object)
+	$doc = $DB->{$dbColl}->findOne(['_id' => $doc['_id'] ]);
+
+	$doc['_id'] = (string)$doc['_id']; // Convert MongoID Object to a string so that json_encode works
+
+	echo "Read Document (2): " . json_encode($doc) . "<br>\n";
+
+
 	// READ (Find One Documents by _id string)
 	$doc = $DB->{$dbColl}->findOne(['_id' => new MongoDB\BSON\ObjectId((string)$doc['_id']) ]);
 
 	$doc['_id'] = (string)$doc['_id']; // Convert MongoID Object to a string so that json_encode works
 
-	echo "Read Document (2): " . json_encode($doc) . "<br>\n";
+	echo "Read Document (3): " . json_encode($doc) . "<br>\n";
 
 
 	// READ (Find All Documents, don't return some fields, sort assending by n)
@@ -141,7 +149,7 @@
 
  	foreach ($cursor as $doc) {
 		$doc['_id'] = (string)$doc['_id']; // Convert MongoID Object to a string so that json_encode works
-		echo "Read Document (3): " . json_encode($doc) . "<br>\n";
+		echo "Read Document (4): " . json_encode($doc) . "<br>\n";
 	}
 
 	// COUNT number of Documents
