@@ -24,13 +24,12 @@
 	try {
 	    $dbs = $mdbClient->listDatabases();
 	} catch (MongoDB\Driver\Exception\ConnectionTimeoutException $e) {
-	    echo 'Error: PHP cannot connect to MongoDB' . "<br>\n";
+	    echo "Error: PHP cannot connect to MongoDB<br>\n";
 	    die();
 	}
 
 	// SELECT DB (shortcut for future reuse)
 	$DB = $mdbClient->{$dbName};
-
 
 	// DEFINE an INDEX (not required)
 	$DB->{$dbColl}->createIndex(['name' => 1]);
@@ -72,31 +71,38 @@
 		['$set' => ['f' => 789]]
 	);
 
-	// Add to array (unique)
+	// Add to set (unique array)
 	$DB->{$dbColl}->updateOne(
 		['name' => 'Peter Griffin'],
-        [ '$addToSet' => [ 'color' => 'blue' ] ]
-    );
-
-	$DB->{$dbColl}->updateOne(
-		['name' => 'Peter Griffin'],
-        [ '$addToSet' => [ 'color' => 'green' ] ]
-    );
+        	[ '$addToSet' => [ 'color' => 'blue' ] ]
+    	);
 
 	$DB->{$dbColl}->updateOne(
 		['name' => 'Peter Griffin'],
-        [ '$addToSet' => [ 'color' => 'pink' ] ]
-    );
+        	[ '$addToSet' => [ 'color' => 'green' ] ]
+       );
 
-    // Remove from array
-    $DB->{$dbColl}->updateOne(
+	$DB->{$dbColl}->updateOne(
 		['name' => 'Peter Griffin'],
-        [ '$pull' => [ 'color' => 'green' ] ]
-    );
+		[ '$addToSet' => [ 'color' => 'pink' ] ]
+	);
+
+	// Add array items to set
+	$fruit = ['orange','grape','blueberry'];
+	$DB->{$dbColl}->updateOne(
+		['name' => 'Peter Griffin'],,
+		[ '$addToSet' => [ 'color' => ['$each' => $fruit] ] ]
+	);
+
+	// Remove from array
+	$DB->{$dbColl}->updateOne(
+		['name' => 'Peter Griffin'],
+		[ '$pull' => [ 'color' => 'green' ] ]
+	);
 
 
-    // Update Many
-    $result = $collection->updateMany(
+	// Update Many
+	$result = $collection->updateMany(
 	    ["name" => ["$exists" => true] ],
 	    ['$set' => ['hey' => 'you']]
 	);
