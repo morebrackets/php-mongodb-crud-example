@@ -46,9 +46,9 @@
 
 	// CREATE/UPDATE (Upsert one Document)
 	$result = $DB->{$dbColl}->updateOne(
-	    ['name' => 'Peter Griffin', 'p' => 123], // What document to find
+	    ['name' => 'Peter Griffin', 'password' => 123], // What document to find
 	    [ 
-	    	'$set' => ['name' => 'Peter Griffin', 'p' => 456, 'f' => 'Avocado'], // What document keys to update/insert
+	    	'$set' => ['name' => 'Peter Griffin', 'password' => 456, 'food' => 'Avocado'], // What document keys to update/insert
 	    	'$unset' => ['a' => true,'b' => true], // Delete some keys
 	    	'$inc' => ['u' => 1]  // Increment a key
 	    ],
