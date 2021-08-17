@@ -90,7 +90,7 @@
 	// Add array items to set
 	$fruit = ['orange','grape','blueberry'];
 	$DB->{$dbColl}->updateOne(
-		['name' => 'Peter Griffin'],,
+		['name' => 'Peter Griffin'],
 		[ '$addToSet' => [ 'color' => ['$each' => $fruit] ] ]
 	);
 
