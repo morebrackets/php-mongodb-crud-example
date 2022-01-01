@@ -102,19 +102,11 @@
 
 
 	// Update Many
-	/*
 	$result = $collection->updateMany(
 	    ["name" => ["$exists" => true] ],
 	    ['$set' => ['hey' => 'you']]
 	);
-	*/
-
-	$result = $collection->update(
-	    ["name" => ["$exists" => true] ],
-	    ['$set' => ['hey' => 'you']],
-            ['multiple' => true]
-	);
-
+	
 	echo "Update Many: ".$result->getModifiedCount()." document(s) modified.<br>\n";
 
 
