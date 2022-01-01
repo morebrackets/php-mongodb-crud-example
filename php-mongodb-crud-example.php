@@ -37,10 +37,10 @@
 
 	// CREATE (Insert one Document)
 	// Note, this will fail and kill the entire script if an indexed unique field already exists. Use find first or upsert instead if possible.
-	$result = $DB->{$dbColl}->insertOne(['name' => 'Peter Griffin', 'password' => 123, 'food' => 'Pizza', 'greeting' => 'Hello']);
+	$result = $DB->{$dbColl}->insertOne(['name' => 'Peter Griffin', 'password' => 123, 'food' => 'Pizza', 'greeting' => 'Hello', 'age' => 35]);
 	echo "INSERTed MongoID '" . $result->getInsertedId() . "' (1)<br>\n";
 
-	$result = $DB->{$dbColl}->insertOne(['name' => 'Stewie Griffin', 'password' => 456, 'food' => 'Carrots', 'greeting' => 'Goodbye']);
+	$result = $DB->{$dbColl}->insertOne(['name' => 'Stewie Griffin', 'password' => 456, 'food' => 'Carrots', 'greeting' => 'Goodbye', 'age' => 2]);
 	echo "INSERTed MongoID '" . $result->getInsertedId() . "' (2)<br>\n";
 	
 
@@ -102,15 +102,23 @@
 
 
 	// Update Many
+	/*
 	$result = $collection->updateMany(
 	    ["name" => ["$exists" => true] ],
 	    ['$set' => ['hey' => 'you']]
+	);
+	*/
+
+	$result = $collection->update(
+	    ["name" => ["$exists" => true] ],
+	    ['$set' => ['hey' => 'you']],
+            ['multiple' => true]
 	);
 
 	echo "Update Many: ".$result->getModifiedCount()." document(s) modified.<br>\n";
 
 
-	// READ (Find One Document)
+	// READ (Find One Document by name)
 	$doc = $DB->{$dbColl}->findOne(['name' => 'Peter Griffin']);
 
 	$doc['_id'] = (string)$doc['_id']; // Convert MongoID Object to a string so that json_encode works
@@ -140,6 +148,14 @@
 
 	echo "Read Document (3): " . json_encode($doc) . "<br>\n";
 
+        // READ (Find One Document by largest value)
+        $doc = $DB->{$dbColl}->findOne(
+               [],
+               ['sort' => ['age' => -1]]
+        );
+
+	echo "Read Document (4): " . json_encode($doc) . "<br>\n";
+
 
 	// READ (Find All Documents, don't return some fields, sort assending by n)
 	$cursor = $DB->{$dbColl}->find(
@@ -154,8 +170,8 @@
 	);
 
  	foreach ($cursor as $doc) {
-		$doc['_id'] = (string)$doc['_id']; // Convert MongoID Object to a string so that json_encode works
-		echo "Read Document (4): " . json_encode($doc) . "<br>\n";
+		$doc['_id'] = (string)$doc['_id']; // Convert MongoID Object to a string
+		echo "Read Document (5): " . json_encode($doc) . "<br>\n";
 	}
 
 	// COUNT number of Documents
